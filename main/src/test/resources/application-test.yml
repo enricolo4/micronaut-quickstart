@@ -1,0 +1,58 @@
+micronaut:
+  application:
+    name: micronautHexagonalQuickstart
+  server:
+    port: 8080
+
+jpa:
+  default:
+    packages-to-scan:
+      - 'com.quickstart'
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: none
+        show_sql: true
+r2dbc:
+  datasources:
+    default:
+      schema-generate: NONE
+      dialect: MYSQL
+      url: r2dbc:tc:mysql:///mhq_db?TC_IMAGE=5.7.22
+      username: mhq_user
+      password: mhq_pwd
+  migrate:
+    dialect: mysql
+    resources-paths:
+      - classpath:/db/migration/*.sql
+flyway:
+  datasources:
+    default:
+      enabled: true
+      url: jdbc:tc:mysql:5.7.22:///mhq_db
+      username: mhq_user
+      password: mhq_pwd
+      locations: classpath:/db/migration/*.sql
+      baseline-on-migrate: true
+kafka:
+  bootstrap:
+    servers: localhost:9092
+  schema-registry:
+    registry:
+      url: http://localhost:8081
+      schema-versions: 1000
+  producers:
+    default:
+      key-serializer: org.apache.kafka.common.serialization.UUIDSerializer
+      value-serializer: io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer
+  #      value-serializer: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer
+  consumers:
+    default:
+      key-deserializer: org.apache.kafka.common.serialization.UUIDDeserializer
+      value-deserializer: io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer
+  #      value.deserializer: io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer
+    smb:
+      key-deserializer: org.apache.kafka.common.serialization.UUIDDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
+      #      value.deserializer: io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer
+

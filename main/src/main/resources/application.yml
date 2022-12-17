@@ -1,0 +1,59 @@
+micronaut:
+  application:
+    name: micronautHexagonalQuickstart
+  server:
+    port: 8087
+
+jpa:
+  default:
+    packages-to-scan:
+      - 'com.quickstart'
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: none
+        show_sql: true
+
+r2dbc:
+  datasources:
+    default:
+      dialect: POSTGRES
+      schema-generate: CREATE_DROP
+      url: r2dbc:postgresql://${PG_HOST:localhost}:${PG_PORT:5432}/${PG_DB_NAME:postgres_account_db}
+      username: postgres_account_user
+      password: postgres_account_pwd
+  migrate:
+    dialect: postgres
+    resources-paths:
+      - classpath:/*.sql
+
+flyway:
+  datasources:
+    default:
+      enabled: true
+      url: jdbc:postgresql://${PG_HOST:localhost}:${PG_PORT:5432}/${PG_DB_NAME:postgres_account_db}
+      username: ${PG_USER:postgres_account_user}
+      password: ${PG_PASS:postgres_account_pwd}
+      locations: classpath:/db/migration/*.sql
+      baseline-on-migrate: true
+
+kafka:
+  bootstrap:
+    servers: localhost:9092
+  schema:
+    registry:
+      url: http://localhost:8081
+      schema-versions: 1000
+  producers:
+    default:
+      key-serializer: org.apache.kafka.common.serialization.UUIDSerializer
+      value-serializer: io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer
+  #      value-serializer: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer
+  consumers:
+    person-event-consumer:
+      key-deserializer: org.apache.kafka.common.serialization.UUIDDeserializer
+      value-deserializer: io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer
+    #      value.deserializer: io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer
+    smb:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
